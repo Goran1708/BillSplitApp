@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+    <TextView
+            android:id="@+id/tVPersonName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+    <EditText
+            android:id="@+id/eTDaysInMonth"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="Days in the month"
+            android:inputType="number"
+            android:ems="10" />
+
+    <TextView
+            android:id="@+id/tVCurrentValue"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center"
+            android:textSize="18dp"
+            android:textColor="#ff33b5e5"/>
+
+    <Button
+            android:id="@+id/bSaveData"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Save data" />
+
+</LinearLayout>
