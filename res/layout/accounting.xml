@@ -3,18 +3,32 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
 
-    <LinearLayout
+    <RelativeLayout
             android:orientation="vertical"
             android:id="@+id/topLayout1"
             android:layout_width="fill_parent"
-            android:layout_height="415dip">
+            android:layout_height="415dip"
+            android:layout_above="@+id/bottomLayout1">
 
         <ListView
                 android:id="@+id/lVPeople"
                 android:scrollbars="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"/>
+    </RelativeLayout>
 
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottomLayout5"
+            android:layout_above="@+id/bottomLayout1" >
+
+    <View
+            android:id="@+id/view"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="#ff33b5e5"/>
     </LinearLayout>
 
     <LinearLayout

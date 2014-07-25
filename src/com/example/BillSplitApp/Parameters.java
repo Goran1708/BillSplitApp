@@ -14,7 +14,7 @@ import java.util.Calendar;
 
 public class Parameters extends Activity {
 
-    String days;
+    Integer days;
     String name;
     EditText amountOfDays;
     TextView currentValue, personName;
@@ -33,7 +33,7 @@ public class Parameters extends Activity {
         currentValue = ((TextView)findViewById(R.id.tVCurrentValue));
         personName = ((TextView)findViewById(R.id.tVPersonName));
         saveData = ((Button)findViewById(R.id.bSaveData));
-        saveData.setOnClickListener(new View.OnClickListener()
+        saveData.setOnClickListener(new View.OnClickListener() //Save button opens dialog
         {
             public void onClick(View paramAnonymousView)
             {
@@ -50,9 +50,10 @@ public class Parameters extends Activity {
                         String str = amountOfDays.getText().toString(); //duplicate 2
                         Calendar c = Calendar.getInstance();
                         Integer monthMaxDays = new Integer(c.getActualMaximum(Calendar.DAY_OF_MONTH));
+
                         if(Integer.parseInt(str) <= monthMaxDays && Integer.parseInt(str) > 0) {
                             Intent localIntent = new Intent(Parameters.this, Accounting.class);
-                            localIntent.putExtra("key", str);
+                            localIntent.putExtra("key", Integer.parseInt(str));
                             startActivity(localIntent);
                         }
                     }
@@ -68,7 +69,7 @@ public class Parameters extends Activity {
     }
 
     private void grabExtras(){
-        days = getIntent().getExtras().getString("arrayKey");
+        days = getIntent().getExtras().getInt("arrayKey");
         currentValue.setText("Your current value is " + days);
         name = getIntent().getExtras().getString("personName");
         personName.setText("Enter amount of days for " + name);

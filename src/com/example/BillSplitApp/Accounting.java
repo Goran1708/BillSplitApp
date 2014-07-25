@@ -11,15 +11,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class Accounting extends Activity implements View.OnClickListener {
 
-    String amountOfDays;
+    Integer amountOfDays;
     String personName;
     static int peopleListSize;
     static int arrayElementPosition;
-    static List<String> daysInApartment = new ArrayList();
+    static List<Integer> daysInApartment = new ArrayList<Integer>();
     static List<String> peopleList = new ArrayList();
     Button addPerson;
     TextView addPersonName;
@@ -32,8 +33,12 @@ public class Accounting extends Activity implements View.OnClickListener {
         setContentView(R.layout.accounting);
         initializeVariables();
         listOfPeople.setAdapter(peopleArrayAdapter);
+        grabExtras();
+    }
+
+    private void grabExtras(){
         if(getIntent().getExtras() != null) {
-            amountOfDays = getIntent().getExtras().getString("key");
+            amountOfDays = getIntent().getExtras().getInt("key");
             daysInApartment.set(arrayElementPosition, amountOfDays);
         }
     }
@@ -50,7 +55,7 @@ public class Accounting extends Activity implements View.OnClickListener {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
                 Intent localIntent = new Intent(Accounting.this, Parameters.class);
                 arrayElementPosition = i;
-                localIntent.putExtra("arrayKey", (String)daysInApartment.get(i));
+                localIntent.putExtra("arrayKey", (Integer)daysInApartment.get(i));
                 localIntent.putExtra("personName", peopleList.get(i));
                 Accounting.this.startActivity(localIntent);
             }
@@ -60,6 +65,7 @@ public class Accounting extends Activity implements View.OnClickListener {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long id)
             {
                 final int position = i;
+                arrayElementPosition = i;
                 AlertDialog alertDialog = new AlertDialog.Builder(Accounting.this).create();
                 alertDialog.setTitle("Delete person");
                 alertDialog.setMessage("Do you want to delete " + peopleList.get(arrayElementPosition) + "?");
@@ -87,7 +93,7 @@ public class Accounting extends Activity implements View.OnClickListener {
         personName = addPersonName.getText().toString();
         peopleList.add(personName);
         listOfPeople.setAdapter(peopleArrayAdapter);
-        daysInApartment.add(peopleListSize, "null");
+        daysInApartment.add(peopleListSize, Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH));
         peopleListSize = 1 + peopleListSize;
     }
 
