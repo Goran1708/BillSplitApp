@@ -44,14 +44,14 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:hint="Name"
-                android:layout_weight="45"/>
+                android:layout_weight="50"/>
 
         <Button
                 android:id="@+id/bAddPerson"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="Add Person"
-                android:layout_weight="55"/>
+                android:layout_weight="50"/>
 
     </LinearLayout>
 
@@ -60,14 +60,24 @@
             android:id="@id/bottomLayout2"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:weightSum="100.0"
             android:layout_alignParentBottom="true">
+        
+        <Button
+                android:id="@+id/bAddBill"
+                android:scrollbars="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Add bill"
+                android:layout_weight="50" />
 
         <Button
                 android:id="@+id/bCalculate"
                 android:scrollbars="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Calculate"/>
+                android:text="Calculate"
+                android:layout_weight="50" />
 
     </LinearLayout>
 </RelativeLayout>

@@ -14,7 +14,7 @@ public class Menu extends ListActivity {
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        setListAdapter(new ArrayAdapter(this,
+        setListAdapter(new ArrayAdapter<Object>(this,
                 android.R.layout.simple_list_item_1, this.activityNames));
     }
 
