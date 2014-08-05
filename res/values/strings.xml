@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">BillSplitApp</string>
+    
+    <string-array name="planets_array">
+        <item>Rent</item>
+        <item>TV</item>
+        <item>Electricity/Gas/Heat</item>
+        <item>Water/Sewer/Garbage</item>
+        <item>Internet</item>
+        <item>Phone</item>
+        <item>Groceries</item>
+        <item>Metro</item>
+        <item>Car</item>
+        <item>Car insurance</item>
+        <item>Car gas</item>
+        <item>Entertainment</item>
+        <item>Parking</item>
+    </string-array>
 </resources>

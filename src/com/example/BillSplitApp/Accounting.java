@@ -6,18 +6,20 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 public class Accounting extends Activity implements View.OnClickListener {
@@ -29,6 +31,7 @@ public class Accounting extends Activity implements View.OnClickListener {
 	static int arrayElementPosition;
 	static List<Integer> daysInApartment = new ArrayList<Integer>();
 	static List<String> peopleList = new ArrayList<String>();
+	static HashMap<String, Float> mapOfBillValues = new HashMap<String, Float>();
 	Button addPerson, calculate, addBill;
 	TextView addPersonName;
 	ListView listOfPeople;
@@ -61,6 +64,15 @@ public class Accounting extends Activity implements View.OnClickListener {
 		addPerson.setOnClickListener(this);
 		calculate.setOnClickListener(this);
 		addBill.setOnClickListener(this);
+		
+		if(mapOfBillValues.isEmpty()) {
+			String[] billArray = getResources().getStringArray(R.array.planets_array);
+			int billArrayLength = billArray.length;
+			for(int i = 0; i < billArrayLength; i++) {
+				mapOfBillValues.put(billArray[i], 0.0f);
+				System.out.println(mapOfBillValues.get(billArray[i]));
+			}
+		}
 
 		listOfPeople
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -108,14 +120,12 @@ public class Accounting extends Activity implements View.OnClickListener {
 										dialog.cancel();
 									}
 								});
-
 						alertDialog.show();
 						return false;
 					}
 				});
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
@@ -128,34 +138,67 @@ public class Accounting extends Activity implements View.OnClickListener {
 			peopleListSize = 1 + peopleListSize;
 			break;
 		case R.id.bAddBill:
-			AlertDialog alertDialog = new AlertDialog.Builder(Accounting.this)
-					.create();
-			alertDialog.setTitle("Add bill");
-			final EditText input = new EditText(this);
-			input.setText("0.0", TextView.BufferType.EDITABLE);
-			input.setRawInputType(InputType.TYPE_CLASS_NUMBER
-					| InputType.TYPE_NUMBER_FLAG_DECIMAL);
-			alertDialog.setView(input);
-			alertDialog.setButton("Save bill amount",
-					new DialogInterface.OnClickListener() {
-						public void onClick(final DialogInterface dialog,
-								final int which) {
-							billAmount = Float.parseFloat(input.getText()
-									.toString());
-							dialog.cancel();
-						}
-					});
-			alertDialog.show();
+			/*
+			 * AlertDialog alertDialog = new
+			 * AlertDialog.Builder(Accounting.this) .create();
+			 * alertDialog.setTitle("Add bill"); final EditText input = new
+			 * EditText(this); input.setText("0.0",
+			 * TextView.BufferType.EDITABLE);
+			 * input.setRawInputType(InputType.TYPE_CLASS_NUMBER |
+			 * InputType.TYPE_NUMBER_FLAG_DECIMAL); alertDialog.setView(input);
+			 * alertDialog.setButton2("Save bill amount", new
+			 * DialogInterface.OnClickListener() { public void onClick(final
+			 * DialogInterface dialog, final int which) { billAmount =
+			 * Float.parseFloat(input.getText() .toString()); dialog.cancel(); }
+			 * }); alertDialog.setButton("Exit", new
+			 * DialogInterface.OnClickListener() { public void onClick(final
+			 * DialogInterface dialog, final int which) { dialog.cancel(); } });
+			 * alertDialog.show(); break;
+			 */
+
+			final Dialog billDialog = new Dialog(Accounting.this);
+			// tell the Dialog to use the dialog.xml as it's layout description
+			billDialog.setContentView(R.layout.bill_dialog);
+			billDialog.setTitle("Add bill");
+			final Spinner spinner = (Spinner) billDialog
+					.findViewById(R.id.spinner1);
+			ArrayAdapter<CharSequence> adapter = ArrayAdapter
+					.createFromResource(this, R.array.planets_array,
+							android.R.layout.simple_spinner_item);
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			spinner.setAdapter(adapter);
+
+			final EditText inputBillAmount = (EditText) billDialog.findViewById(R.id.eTBillAmount);
+
+			Button billSave = (Button) billDialog.findViewById(R.id.bSaveBill);
+			billSave.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					mapOfBillValues.put(spinner.getSelectedItem().toString(),
+							Float.parseFloat(inputBillAmount.getText()
+									.toString()));
+					System.out.println(mapOfBillValues.get(spinner.getSelectedItem().toString()));
+				}
+			});
+
+			Button exitBill = (Button) billDialog.findViewById(R.id.bExitBill);
+			exitBill.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					billDialog.cancel();
+				}
+			});
+			billDialog.show();
 			break;
 		case R.id.bCalculate:
 			if (billAmount >= 0 && !(daysInApartment.isEmpty())) {
-				final Dialog dialog = new Dialog(Accounting.this);
-				dialog.setContentView(R.layout.calculatedialog);
-				dialog.setTitle("Final bill calculation");
-				dialog.setCancelable(true);
+				final Dialog dialogCalc = new Dialog(Accounting.this);
+				dialogCalc.setContentView(R.layout.calculatedialog);
+				dialogCalc.setTitle("Final bill calculation");
+				dialogCalc.setCancelable(true);
 
 				// set up text
-				TextView text = (TextView) dialog
+				TextView text = (TextView) dialogCalc
 						.findViewById(R.id.tVIndividualBill);
 				float coeficient = 0;
 				float amountPersonPays;
@@ -166,25 +209,25 @@ public class Accounting extends Activity implements View.OnClickListener {
 				for (int i = 0; i < peopleList.size(); i++) {
 					amountPersonPays = (daysInApartment.get(i).intValue()
 							/ coeficient * billAmount);
-					
-					if(!(text.getText().equals("false"))) {
-					text.setText(text.getText() + "\n" + peopleList.get(i)
-							+ " has to pay " + amountPersonPays);
-					} else {
-						text.setText(peopleList.get(i)
+
+					if (!(text.getText().equals("false"))) {
+						text.setText(text.getText() + "\n" + peopleList.get(i)
 								+ " has to pay " + amountPersonPays);
+					} else {
+						text.setText(peopleList.get(i) + " has to pay "
+								+ amountPersonPays);
 					}
 				}
 
 				// set up button
-				Button button = (Button) dialog.findViewById(R.id.bCancel);
+				Button button = (Button) dialogCalc.findViewById(R.id.bCancel);
 				button.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						dialog.cancel();
+						dialogCalc.cancel();
 					}
 				});
-				dialog.show();
+				dialogCalc.show();
 			} else {
 				Toast.makeText(getBaseContext(),
 						"You didn't enter bill amount or people",
