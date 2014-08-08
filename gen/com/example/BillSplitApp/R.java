@@ -19,35 +19,42 @@ public final class R {
         public static final int image=0x7f020002;
     }
     public static final class id {
-        public static final int ScrollView01=0x7f06000e;
-        public static final int TextView01=0x7f060010;
+        public static final int CheckBox01=0x7f060010;
+        public static final int ScrollView01=0x7f060011;
+        public static final int TextView01=0x7f060013;
         public static final int bAddBill=0x7f060008;
         public static final int bAddPerson=0x7f060007;
         public static final int bCalculate=0x7f060009;
-        public static final int bCancel=0x7f060011;
-        public static final int bExitBill=0x7f06000d;
+        public static final int bCancel=0x7f060014;
+        public static final int bExitBill=0x7f06000e;
         public static final int bSaveBill=0x7f06000c;
-        public static final int bSaveData=0x7f060015;
+        public static final int bSaveData=0x7f06001b;
+        public static final int bShowBill=0x7f06000d;
+        public static final int bottomLayout=0x7f060019;
         public static final int bottomLayout1=0x7f060001;
         public static final int bottomLayout2=0x7f060005;
         public static final int bottomLayout5=0x7f060003;
         public static final int eTBillAmount=0x7f06000b;
-        public static final int eTDaysInMonth=0x7f060013;
+        public static final int eTDaysInMonth=0x7f060017;
         public static final int eTPersonName=0x7f060006;
+        public static final int lVBillCheckBox=0x7f06001a;
         public static final int lVPeople=0x7f060002;
+        public static final int rowTextView=0x7f06000f;
         public static final int spinner1=0x7f06000a;
-        public static final int tVCurrentValue=0x7f060014;
-        public static final int tVIndividualBill=0x7f06000f;
-        public static final int tVPersonName=0x7f060012;
+        public static final int tVCurrentValue=0x7f060018;
+        public static final int tVIndividualBill=0x7f060012;
+        public static final int tVPersonName=0x7f060016;
+        public static final int topLayout=0x7f060015;
         public static final int topLayout1=0x7f060000;
         public static final int view=0x7f060004;
     }
     public static final class layout {
         public static final int accounting=0x7f030000;
         public static final int bill_dialog=0x7f030001;
-        public static final int calculatedialog=0x7f030002;
-        public static final int main=0x7f030003;
-        public static final int parameters=0x7f030004;
+        public static final int billcheckboxadapter=0x7f030002;
+        public static final int calculatedialog=0x7f030003;
+        public static final int main=0x7f030004;
+        public static final int parameters=0x7f030005;
     }
     public static final class string {
         public static final int app_name=0x7f040000;

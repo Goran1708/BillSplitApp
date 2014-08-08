@@ -16,13 +16,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/spinner1"
-        android:hint="Enter bill amount"
         android:inputType="numberDecimal"
-        android:ems="10" >
+        android:ems="10"
+        android:padding="15dp" >
 
         <requestFocus />
     </EditText>
-
+    
     <Button
         android:id="@+id/bSaveBill"
         android:layout_width="fill_parent"
@@ -30,13 +30,21 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/eTBillAmount"
         android:text="Save bill amount" />
+    
+    <Button
+        android:id="@+id/bShowBill"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/bSaveBill"
+        android:text="Show Bills" />
 
     <Button
         android:id="@+id/bExitBill"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/bSaveBill"
+        android:layout_below="@+id/bShowBill"
         android:text="Exit" />
 
 </RelativeLayout>

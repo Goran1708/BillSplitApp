@@ -20,7 +20,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+
+import com.google.gson.Gson;
 
 public class Accounting extends Activity implements View.OnClickListener {
 
@@ -31,11 +34,13 @@ public class Accounting extends Activity implements View.OnClickListener {
 	static int arrayElementPosition;
 	static List<Integer> daysInApartment = new ArrayList<Integer>();
 	static List<String> peopleList = new ArrayList<String>();
-	static HashMap<String, Float> mapOfBillValues = new HashMap<String, Float>();
+	static LinkedHashMap<String, ArrayList<BillItems>> peopleMapBillItems = new LinkedHashMap<String, ArrayList<BillItems>>();
+	static LinkedHashMap<String, Float> mapOfBillValues = new LinkedHashMap<String, Float>();
+	static ArrayList<BillItems> listOfBills = new ArrayList<BillItems>();
 	Button addPerson, calculate, addBill;
 	TextView addPersonName;
 	ListView listOfPeople;
-	ArrayAdapterItem peopleArrayAdapter;
+	PeopleArrayAdapter peopleArrayAdapter;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -46,16 +51,9 @@ public class Accounting extends Activity implements View.OnClickListener {
 		grabExtras();
 	}
 
-	private void grabExtras() {
-		if (getIntent().getExtras() != null) {
-			amountOfDays = getIntent().getExtras().getInt("key");
-			daysInApartment.set(arrayElementPosition, amountOfDays);
-		}
-	}
-
 	private void initializeVariables() {
 		listOfPeople = ((ListView) findViewById(R.id.lVPeople));
-		peopleArrayAdapter = new ArrayAdapterItem(this,
+		peopleArrayAdapter = new PeopleArrayAdapter(this,
 				android.R.layout.simple_list_item_1, peopleList);
 		addPersonName = ((TextView) findViewById(R.id.eTPersonName));
 		addPerson = ((Button) findViewById(R.id.bAddPerson));
@@ -64,13 +62,13 @@ public class Accounting extends Activity implements View.OnClickListener {
 		addPerson.setOnClickListener(this);
 		calculate.setOnClickListener(this);
 		addBill.setOnClickListener(this);
-		
-		if(mapOfBillValues.isEmpty()) {
-			String[] billArray = getResources().getStringArray(R.array.planets_array);
+
+		if (mapOfBillValues.isEmpty()) {
+			String[] billArray = getResources().getStringArray(
+					R.array.planets_array);
 			int billArrayLength = billArray.length;
-			for(int i = 0; i < billArrayLength; i++) {
+			for (int i = 0; i < billArrayLength; i++) {
 				mapOfBillValues.put(billArray[i], 0.0f);
-				System.out.println(mapOfBillValues.get(billArray[i]));
 			}
 		}
 
@@ -84,6 +82,15 @@ public class Accounting extends Activity implements View.OnClickListener {
 						localIntent.putExtra("arrayKey",
 								(Integer) daysInApartment.get(i));
 						localIntent.putExtra("personName", peopleList.get(i));
+						if(peopleMapBillItems.get(peopleList
+												.get(i)) != null) {
+							if(peopleMapBillItems.containsKey(peopleList
+												.get(i))) {
+								Gson gson = new Gson();
+								String list = gson.toJson(peopleMapBillItems);
+								localIntent.putExtra("mapBillItems", list);
+							}
+						}
 						Accounting.this.startActivity(localIntent);
 					}
 				});
@@ -105,6 +112,8 @@ public class Accounting extends Activity implements View.OnClickListener {
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int which) {
+										peopleMapBillItems.remove(peopleList
+												.get(position));
 										peopleList.remove(position);
 										daysInApartment.remove(position);
 										listOfPeople
@@ -132,6 +141,7 @@ public class Accounting extends Activity implements View.OnClickListener {
 		case R.id.bAddPerson:
 			personName = addPersonName.getText().toString();
 			peopleList.add(personName);
+			peopleMapBillItems.put(personName, null);
 			listOfPeople.setAdapter(peopleArrayAdapter);
 			daysInApartment.add(peopleListSize, Calendar.getInstance()
 					.getActualMaximum(Calendar.DAY_OF_MONTH));
@@ -168,8 +178,46 @@ public class Accounting extends Activity implements View.OnClickListener {
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			spinner.setAdapter(adapter);
 
-			final EditText inputBillAmount = (EditText) billDialog.findViewById(R.id.eTBillAmount);
+			final EditText inputBillAmount = (EditText) billDialog
+					.findViewById(R.id.eTBillAmount);
+			inputBillAmount.setText("0.0", TextView.BufferType.EDITABLE);
 
+			// / Button to show Bills and their values
+			Button showBill = (Button) billDialog.findViewById(R.id.bShowBill);
+			showBill.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					final Dialog showBillDialog = new Dialog(Accounting.this);
+					showBillDialog.setContentView(R.layout.calculatedialog);
+					showBillDialog.setTitle("Final bill calculation");
+					showBillDialog.setCancelable(true);
+
+					TextView text = (TextView) showBillDialog
+							.findViewById(R.id.tVIndividualBill);
+					for (HashMap.Entry<String, Float> entry : mapOfBillValues
+							.entrySet()) {
+						if (!(text.getText().equals("false"))) {
+							text.setText(text.getText() + "\n" + entry.getKey()
+									+ " : " + entry.getValue());
+						} else {
+							text.setText(entry.getKey() + " : "
+									+ entry.getValue());
+						}
+					}
+
+					Button button = (Button) showBillDialog
+							.findViewById(R.id.bCancel);
+					button.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							showBillDialog.cancel();
+						}
+					});
+					showBillDialog.show();
+				}
+			});
+
+			// /Saves Bill value
 			Button billSave = (Button) billDialog.findViewById(R.id.bSaveBill);
 			billSave.setOnClickListener(new OnClickListener() {
 				@Override
@@ -177,10 +225,15 @@ public class Accounting extends Activity implements View.OnClickListener {
 					mapOfBillValues.put(spinner.getSelectedItem().toString(),
 							Float.parseFloat(inputBillAmount.getText()
 									.toString()));
-					System.out.println(mapOfBillValues.get(spinner.getSelectedItem().toString()));
+					billAmount = 0;
+					for (HashMap.Entry<String, Float> entry : mapOfBillValues
+							.entrySet()) {
+						billAmount = billAmount + entry.getValue().floatValue();
+					}
 				}
 			});
 
+			// /Exit Bill dialog
 			Button exitBill = (Button) billDialog.findViewById(R.id.bExitBill);
 			exitBill.setOnClickListener(new OnClickListener() {
 				@Override
@@ -234,6 +287,20 @@ public class Accounting extends Activity implements View.OnClickListener {
 						Toast.LENGTH_SHORT).show();
 			}
 			break;
+		}
+	}
+
+	private void grabExtras() {
+		if (getIntent().getExtras() != null) {
+			amountOfDays = getIntent().getExtras().getInt("key");
+			daysInApartment.set(arrayElementPosition, amountOfDays);
+			listOfBills = getIntent().getParcelableArrayListExtra(
+					"billListBoolean");
+			peopleMapBillItems.put(peopleList.get(arrayElementPosition), listOfBills);
+			for (int i = 0; i < listOfBills.size(); i++) {
+				System.out.println(listOfBills.get(i).getName() + "  "
+						+ listOfBills.get(i).isChecked());
+			}
 		}
 	}
 

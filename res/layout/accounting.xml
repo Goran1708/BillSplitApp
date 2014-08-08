@@ -68,7 +68,7 @@
                 android:scrollbars="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Add bill"
+                android:text="Add/Show bill"
                 android:layout_weight="50" />
 
         <Button

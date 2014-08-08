@@ -8,13 +8,13 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import java.util.List;
 
-public class ArrayAdapterItem extends ArrayAdapter<String> {
+public class PeopleArrayAdapter extends ArrayAdapter<String> {
 
 	Context context;
 	List<String> objects;
 	int textViewResourceId;
 
-	public ArrayAdapterItem(Context context, int paramInt,
+	public PeopleArrayAdapter(Context context, int paramInt,
 			List<String> paramList) {
 		super(context, paramInt, paramList);
 		this.context = context;
