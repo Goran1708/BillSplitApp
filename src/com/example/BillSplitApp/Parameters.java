@@ -46,11 +46,11 @@ public class Parameters extends Activity {
 		setContentView(R.layout.parameters);
 		grabExtras();
 		if (getIntent().getStringExtra("mapBillItems") != null) {
-			String str=  getIntent().getStringExtra("mapBillItems");
+			String str = getIntent().getStringExtra("mapBillItems");
 			Gson gson = new Gson();
-			Type entityType = new TypeToken< LinkedHashMap<String, List<BillItems>>>(){}.getType();
-			peopleMapBillItems = gson.fromJson(str, entityType); 
-			System.out.println("Its working 0");
+			Type entityType = new TypeToken<LinkedHashMap<String, List<BillItems>>>() {
+			}.getType();
+			peopleMapBillItems = gson.fromJson(str, entityType);
 		}
 		initializeVariables();
 		setExtras();
@@ -154,13 +154,9 @@ public class Parameters extends Activity {
 		billList.add(new BillItems("Entertainment"));
 		billList.add(new BillItems("Parking"));
 
-		List<BillItems> valueList = new ArrayList<BillItems>();
-		System.out.println(name);
-		System.out.println(peopleMapBillItems.keySet());
+		List<BillItems> valueList = new ArrayList<BillItems>();;
 		if (peopleMapBillItems.get(name) != null) {
-			System.out.println("Its working 1");
 			if (peopleMapBillItems.containsKey(name)) {
-				System.out.println("Its working 2");
 				for (List<BillItems> billItemValues : peopleMapBillItems
 						.values()) {
 					for (BillItems value : billItemValues) {
@@ -169,14 +165,9 @@ public class Parameters extends Activity {
 				}
 			}
 		}
-		for (int i = 0; i < valueList.size(); i++) {
-			System.out.println(valueList.get(i).isChecked());
-		}
-
 		if (!(valueList.isEmpty())) {
 			for (int i = 0; i < billList.size(); i++) {
 				billList.set(i, valueList.get(i));
-				System.out.println(billList.get(i).isChecked());
 			}
 		}
 
@@ -207,7 +198,7 @@ public class Parameters extends Activity {
 		days = getIntent().getExtras().getInt("arrayKey");
 		name = getIntent().getExtras().getString("personName");
 	}
-	
+
 	private void setExtras() {
 		currentValue.setText("Your current value is " + days);
 		personName.setText("Enter amount of days for " + name);

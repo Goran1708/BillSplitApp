@@ -22,7 +22,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-
 import com.google.gson.Gson;
 
 public class Accounting extends Activity implements View.OnClickListener {
@@ -36,6 +35,7 @@ public class Accounting extends Activity implements View.OnClickListener {
 	static List<String> peopleList = new ArrayList<String>();
 	static LinkedHashMap<String, ArrayList<BillItems>> peopleMapBillItems = new LinkedHashMap<String, ArrayList<BillItems>>();
 	static LinkedHashMap<String, Float> mapOfBillValues = new LinkedHashMap<String, Float>();
+	LinkedHashMap<String, Float> mapOfPeopleBills = new LinkedHashMap<String, Float>();
 	static ArrayList<BillItems> listOfBills = new ArrayList<BillItems>();
 	Button addPerson, calculate, addBill;
 	TextView addPersonName;
@@ -82,10 +82,9 @@ public class Accounting extends Activity implements View.OnClickListener {
 						localIntent.putExtra("arrayKey",
 								(Integer) daysInApartment.get(i));
 						localIntent.putExtra("personName", peopleList.get(i));
-						if(peopleMapBillItems.get(peopleList
-												.get(i)) != null) {
-							if(peopleMapBillItems.containsKey(peopleList
-												.get(i))) {
+						if (peopleMapBillItems.get(peopleList.get(i)) != null) {
+							if (peopleMapBillItems.containsKey(peopleList
+									.get(i))) {
 								Gson gson = new Gson();
 								String list = gson.toJson(peopleMapBillItems);
 								localIntent.putExtra("mapBillItems", list);
@@ -139,33 +138,20 @@ public class Accounting extends Activity implements View.OnClickListener {
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.bAddPerson:
-			personName = addPersonName.getText().toString();
-			peopleList.add(personName);
-			peopleMapBillItems.put(personName, null);
-			listOfPeople.setAdapter(peopleArrayAdapter);
-			daysInApartment.add(peopleListSize, Calendar.getInstance()
-					.getActualMaximum(Calendar.DAY_OF_MONTH));
-			peopleListSize = 1 + peopleListSize;
+			if (!(addPersonName.getText().toString().equals(""))) {
+				personName = addPersonName.getText().toString();
+				peopleList.add(personName);
+				peopleMapBillItems.put(personName, null);
+				listOfPeople.setAdapter(peopleArrayAdapter);
+				daysInApartment.add(peopleListSize, Calendar.getInstance()
+						.getActualMaximum(Calendar.DAY_OF_MONTH));
+				peopleListSize = 1 + peopleListSize;
+			} else {
+				Toast.makeText(getBaseContext(), "You didn't enter any name",
+						Toast.LENGTH_SHORT).show();
+			}
 			break;
 		case R.id.bAddBill:
-			/*
-			 * AlertDialog alertDialog = new
-			 * AlertDialog.Builder(Accounting.this) .create();
-			 * alertDialog.setTitle("Add bill"); final EditText input = new
-			 * EditText(this); input.setText("0.0",
-			 * TextView.BufferType.EDITABLE);
-			 * input.setRawInputType(InputType.TYPE_CLASS_NUMBER |
-			 * InputType.TYPE_NUMBER_FLAG_DECIMAL); alertDialog.setView(input);
-			 * alertDialog.setButton2("Save bill amount", new
-			 * DialogInterface.OnClickListener() { public void onClick(final
-			 * DialogInterface dialog, final int which) { billAmount =
-			 * Float.parseFloat(input.getText() .toString()); dialog.cancel(); }
-			 * }); alertDialog.setButton("Exit", new
-			 * DialogInterface.OnClickListener() { public void onClick(final
-			 * DialogInterface dialog, final int which) { dialog.cancel(); } });
-			 * alertDialog.show(); break;
-			 */
-
 			final Dialog billDialog = new Dialog(Accounting.this);
 			// tell the Dialog to use the dialog.xml as it's layout description
 			billDialog.setContentView(R.layout.bill_dialog);
@@ -253,22 +239,57 @@ public class Accounting extends Activity implements View.OnClickListener {
 				// set up text
 				TextView text = (TextView) dialogCalc
 						.findViewById(R.id.tVIndividualBill);
+				mapOfPeopleBills.clear();
+				
 				float coeficient = 0;
-				float amountPersonPays;
-				for (int i = 0; i < daysInApartment.size(); i++) {
-					coeficient = coeficient + daysInApartment.get(i);
+				float amountPersonPays = 0;
+				int divider = 0;
+				for (int i = 0; i < listOfBills.size(); i++) {
+					coeficient = 0;
+					for (int j = 0; j < peopleList.size(); j++) {
+						System.out.println(peopleMapBillItems
+								.get(peopleList.get(j)).get(i).isChecked());
+						if (peopleMapBillItems.get(peopleList.get(j)).get(i)
+								.isChecked()) {
+							divider++;
+							coeficient = coeficient + daysInApartment.get(j);
+						}
+					}
+					System.out.println(!(divider == 0));
+					if (!(divider == 0)) {
+						for (int k = 0; k < peopleList.size(); k++) {
+							if (peopleMapBillItems.get(peopleList.get(k))
+									.get(i).isChecked()) {
+								amountPersonPays = (daysInApartment.get(k)
+										.intValue() / coeficient)
+										* mapOfBillValues.get(listOfBills
+												.get(i).getName());
+								System.out.println(amountPersonPays);
+								System.out.println(mapOfPeopleBills.containsKey(peopleList.get(k)));
+								if (mapOfPeopleBills.containsKey(peopleList.get(k))) {
+									amountPersonPays = amountPersonPays
+											+ mapOfPeopleBills.get(
+													peopleList.get(k))
+													.floatValue();
+									System.out.println(mapOfPeopleBills.get(
+											peopleList.get(k)).floatValue());
+								}
+								mapOfPeopleBills.put(peopleList.get(k),
+										amountPersonPays);
+							}
+						}
+						divider = 0;
+					}
 				}
 
 				for (int i = 0; i < peopleList.size(); i++) {
-					amountPersonPays = (daysInApartment.get(i).intValue()
-							/ coeficient * billAmount);
-
 					if (!(text.getText().equals("false"))) {
 						text.setText(text.getText() + "\n" + peopleList.get(i)
-								+ " has to pay " + amountPersonPays);
+								+ " has to pay "
+								+ mapOfPeopleBills.get(peopleList.get(i)));
 					} else {
 						text.setText(peopleList.get(i) + " has to pay "
-								+ amountPersonPays);
+								+ mapOfPeopleBills.get(peopleList.get(i)));
 					}
 				}
 
@@ -296,11 +317,8 @@ public class Accounting extends Activity implements View.OnClickListener {
 			daysInApartment.set(arrayElementPosition, amountOfDays);
 			listOfBills = getIntent().getParcelableArrayListExtra(
 					"billListBoolean");
-			peopleMapBillItems.put(peopleList.get(arrayElementPosition), listOfBills);
-			for (int i = 0; i < listOfBills.size(); i++) {
-				System.out.println(listOfBills.get(i).getName() + "  "
-						+ listOfBills.get(i).isChecked());
-			}
+			peopleMapBillItems.put(peopleList.get(arrayElementPosition),
+					listOfBills);
 		}
 	}
 

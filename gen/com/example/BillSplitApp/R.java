@@ -17,6 +17,7 @@ public final class R {
         public static final int divider=0x7f020000;
         public static final int ic_launcher=0x7f020001;
         public static final int image=0x7f020002;
+        public static final int scrollbar=0x7f020003;
     }
     public static final class id {
         public static final int CheckBox01=0x7f060010;

@@ -6,7 +6,7 @@ import android.os.Parcelable;
 public class BillItems implements Parcelable {
 
 	private String name = "";
-	private boolean checked = false;
+	private boolean checked = true;
 
 	public BillItems() {
 	}
